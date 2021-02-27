@@ -31,9 +31,9 @@ var (
 const reqLogModule = "log_middleware"
 const reqAction = "req_handling"
 
-func RequestLog(next http.Handler, logger xlog.Logger) http.Handler {
+func RequestLog(next http.Handler, cfg MiddlewareConfig) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		log := logger
+		log := cfg.Logger
 		dump, err := httputil.DumpRequest(r, true)
 		if err != nil {
 			http.Error(w, fmt.Sprint(err), http.StatusInternalServerError)
