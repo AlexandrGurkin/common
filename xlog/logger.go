@@ -2,6 +2,8 @@
 //
 package xlog
 
+import "io"
+
 // Logger interface for integration_common
 //
 type Logger interface {
@@ -16,8 +18,13 @@ type Logger interface {
 	Trace(args ...interface{})
 	Error(args ...interface{})
 
-	WithFields(fields Fields) Logger
-	WithField(key string, value interface{}) Logger
+	WithXFields(fields Fields) Logger
+	WithXField(key string, value interface{}) Logger
 }
 
 type Fields map[string]interface{}
+
+type LoggerCfg struct {
+	Level string
+	Out   io.Writer
+}
