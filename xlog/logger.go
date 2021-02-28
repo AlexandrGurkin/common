@@ -12,11 +12,13 @@ type Logger interface {
 	Warnf(format string, args ...interface{})
 	Tracef(format string, args ...interface{})
 	Errorf(format string, args ...interface{})
+	Fatalf(format string, args ...interface{})
 	Debug(args ...interface{})
 	Info(args ...interface{})
 	Warn(args ...interface{})
 	Trace(args ...interface{})
 	Error(args ...interface{})
+	Fatal(args ...interface{})
 
 	WithXFields(fields Fields) Logger
 	WithXField(key string, value interface{}) Logger
