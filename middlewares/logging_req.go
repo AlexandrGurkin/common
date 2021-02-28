@@ -45,13 +45,13 @@ func RequestLog(next http.Handler, cfg MiddlewareConfig) http.Handler {
 			cid = guuid.New().String()
 			r.Header.Set(consts.CorrelationID, cid)
 		}
-		logger := log.WithFields(xlog.Fields{
+		logger := log.WithXFields(xlog.Fields{
 			consts.FieldModule:        reqLogModule,
 			consts.FieldAction:        reqAction,
 			consts.FieldCorrelationID: cid,
 			consts.FieldURI:           r.RequestURI})
 
-		logger.WithField(consts.FieldParams, string(dump)).Tracef("Called [%s] method", r.Method)
+		logger.WithXField(consts.FieldParams, string(dump)).Tracef("Called [%s] method", r.Method)
 
 		startTime := time.Now()
 
@@ -67,13 +67,13 @@ func RequestLog(next http.Handler, cfg MiddlewareConfig) http.Handler {
 		}
 
 		if status != 200 && status != 204 {
-			logger.WithFields(xlog.Fields{
+			logger.WithXFields(xlog.Fields{
 				consts.FieldHttpCode: status,
 				consts.FieldDuration: duration.Microseconds(),
 				consts.FieldParams:   string(dump),
 			}).Warnf("Completed [%s] method", r.Method)
 		} else {
-			logger.WithFields(xlog.Fields{
+			logger.WithXFields(xlog.Fields{
 				consts.FieldHttpCode: status,
 				consts.FieldDuration: duration.Microseconds(),
 			}).Tracef("Completed [%s] method", r.Method)
