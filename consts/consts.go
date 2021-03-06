@@ -19,5 +19,5 @@ const (
 	FieldURI           = `api_url`
 	FieldParams        = `params`
 	FieldHttpCode      = `http_code`
-	FieldDuration      = `duration`
+	FieldDuration      = `duration_us`
 )

@@ -33,6 +33,7 @@ const reqAction = "req_handling"
 
 func RequestLog(next http.Handler, cfg MiddlewareConfig) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		startTime := time.Now()
 		log := cfg.Logger
 		dump, err := httputil.DumpRequest(r, true)
 		if err != nil {
@@ -53,11 +54,8 @@ func RequestLog(next http.Handler, cfg MiddlewareConfig) http.Handler {
 
 		logger.WithXField(consts.FieldParams, string(dump)).Tracef("Called [%s] method", r.Method)
 
-		startTime := time.Now()
-
 		w.Header().Set(consts.CorrelationID, cid)
 		next.ServeHTTP(w, r)
-		duration := time.Since(startTime)
 
 		status := int64(0)
 		if rw := reflect.Indirect(reflect.ValueOf(w)); rw.IsValid() && rw.Kind() == reflect.Struct {
@@ -65,6 +63,8 @@ func RequestLog(next http.Handler, cfg MiddlewareConfig) http.Handler {
 				status = rf.Int()
 			}
 		}
+
+		duration := time.Since(startTime)
 
 		if status != 200 && status != 204 {
 			logger.WithXFields(xlog.Fields{
