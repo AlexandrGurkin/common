@@ -44,16 +44,16 @@ func PprofHandler(next http.Handler) http.Handler {
 			pprof.Handler("heap").ServeHTTP(w, req)
 			return
 		case pprofGoroutineUrl:
-			pprof.Handler("goroutine")
+			pprof.Handler("goroutine").ServeHTTP(w, req)
 			return
 		case pprofThreadUrl:
-			pprof.Handler("threadcreate")
+			pprof.Handler("threadcreate").ServeHTTP(w, req)
 			return
 		case pprofBlockUrl:
-			pprof.Handler("block")
+			pprof.Handler("block").ServeHTTP(w, req)
 			return
 		case pprofMutexUrl:
-			pprof.Handler("mutex")
+			pprof.Handler("mutex").ServeHTTP(w, req)
 			return
 		default:
 			next.ServeHTTP(w, req)
