@@ -16,6 +16,7 @@ const (
 	pprofGoroutineUrl string = `/debug/pprof/goroutine`
 	pprofThreadUrl    string = `/debug/pprof/threadcreate`
 	pprofBlockUrl     string = `/debug/pprof/block`
+	pprofMutexUrl     string = `/debug/pprof/mutex`
 )
 
 func PprofHandler(next http.Handler) http.Handler {
@@ -31,7 +32,7 @@ func PprofHandler(next http.Handler) http.Handler {
 			pprof.Profile(w, req)
 			return
 		case pprofSymbolUrl:
-			pprof.Profile(w, req)
+			pprof.Symbol(w, req)
 			return
 		case pprofTraceUrl:
 			pprof.Trace(w, req)
@@ -50,6 +51,9 @@ func PprofHandler(next http.Handler) http.Handler {
 			return
 		case pprofBlockUrl:
 			pprof.Handler("block")
+			return
+		case pprofMutexUrl:
+			pprof.Handler("mutex")
 			return
 		default:
 			next.ServeHTTP(w, req)
