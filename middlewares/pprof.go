@@ -6,13 +6,16 @@ import (
 )
 
 const (
-	pprofUrl        string = `/debug/pprof/`
-	pprofCmdUrl     string = `/debug/pprof/cmdline`
-	pprofProfileUrl string = `/debug/pprof/profile`
-	pprofSymbolUrl  string = `/debug/pprof/symbol`
-	pprofTraceUrl   string = `/debug/pprof/trace`
-	pprofAllocsUrl  string = `/debug/pprof/allocs`
-	pprofHeapUrl    string = `/debug/pprof/heap`
+	pprofUrl          string = `/debug/pprof/`
+	pprofCmdUrl       string = `/debug/pprof/cmdline`
+	pprofProfileUrl   string = `/debug/pprof/profile`
+	pprofSymbolUrl    string = `/debug/pprof/symbol`
+	pprofTraceUrl     string = `/debug/pprof/trace`
+	pprofAllocsUrl    string = `/debug/pprof/allocs`
+	pprofHeapUrl      string = `/debug/pprof/heap`
+	pprofGoroutineUrl string = `/debug/pprof/goroutine`
+	pprofThreadUrl    string = `/debug/pprof/threadcreate`
+	pprofBlockUrl     string = `/debug/pprof/block`
 )
 
 func PprofHandler(next http.Handler) http.Handler {
@@ -38,6 +41,15 @@ func PprofHandler(next http.Handler) http.Handler {
 			return
 		case pprofHeapUrl:
 			pprof.Handler("heap").ServeHTTP(w, req)
+			return
+		case pprofGoroutineUrl:
+			pprof.Handler("goroutine")
+			return
+		case pprofThreadUrl:
+			pprof.Handler("threadcreate")
+			return
+		case pprofBlockUrl:
+			pprof.Handler("block")
 			return
 		default:
 			next.ServeHTTP(w, req)
