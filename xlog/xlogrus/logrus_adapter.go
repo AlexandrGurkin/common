@@ -26,8 +26,36 @@ func NewXLogrus(cfg xlog.LoggerCfg) xlog.Logger {
 	} else {
 		logrus.SetLevel(lvl)
 	}
-	logrus.SetFormatter(&logrus.JSONFormatter{TimestampFormat: time.RFC3339Nano})
+	logrus.SetFormatter(&logrus.JSONFormatter{
+		TimestampFormat: time.RFC3339Nano,
+		FieldMap: logrus.FieldMap{
+			logrus.FieldKeyMsg: "message",
+		},
+	})
 	logrus.SetOutput(cfg.Out)
 	//logrus.AddHook(hooks.LogProm{})
 	return &xrus{*logrus.NewEntry(logrus.StandardLogger())}
+}
+
+func (x *xrus) Debug(msg string) {
+	x.Debugf("%s", msg)
+}
+
+func (x *xrus) Info(msg string) {
+	x.Infof("%s", msg)
+}
+
+func (x *xrus) Warn(msg string) {
+	x.Warnf("%s", msg)
+}
+func (x *xrus) Trace(msg string) {
+	x.Tracef("%s", msg)
+}
+
+func (x *xrus) Error(msg string) {
+	x.Errorf("%s", msg)
+}
+
+func (x *xrus) Fatal(msg string) {
+	x.Fatalf("%s", msg)
 }

@@ -7,5 +7,7 @@ require (
 	github.com/golang/mock v1.5.0
 	github.com/google/uuid v1.2.0
 	github.com/prometheus/client_golang v1.9.0
+	github.com/rs/zerolog v1.20.0
 	github.com/sirupsen/logrus v1.6.0
+	golang.org/x/tools v0.1.0
 )
