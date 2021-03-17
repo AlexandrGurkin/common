@@ -4,7 +4,6 @@ package xlog
 
 import (
 	"io"
-	"sync/atomic"
 )
 
 // Logger interface for integration_common
@@ -32,17 +31,4 @@ type Fields map[string]interface{}
 type LoggerCfg struct {
 	Level string
 	Out   io.Writer
-}
-
-type BlackholeStream struct {
-	writeCount uint64
-}
-
-func (s *BlackholeStream) WriteCount() uint64 {
-	return atomic.LoadUint64(&s.writeCount)
-}
-
-func (s *BlackholeStream) Write(p []byte) (int, error) {
-	atomic.AddUint64(&s.writeCount, 1)
-	return len(p), nil
 }

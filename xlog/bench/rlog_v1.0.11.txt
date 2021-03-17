@@ -1,0 +1,6 @@
+goos: darwin
+goarch: amd64
+pkg: github.com/AlexandrGurkin/common/xlog/xlogrus
+BenchmarkXLog-16    	  464090	      2431 ns/op	    1105 B/op	      25 allocs/op
+PASS
+ok  	github.com/AlexandrGurkin/common/xlog/xlogrus	1.235s

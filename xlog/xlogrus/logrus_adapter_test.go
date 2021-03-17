@@ -11,7 +11,7 @@ import (
 )
 
 func BenchmarkXLog(b *testing.B) {
-	log := NewXLogrus(xlog.LoggerCfg{Level: "trace", Out: &xlog.BlackholeStream{}})
+	log := NewXLogrus(xlog.LoggerCfg{Level: "trace", Out: &mocks.BlackHoleStream{}})
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		log.Trace("ep")
