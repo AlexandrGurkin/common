@@ -1,0 +1,11 @@
+goos: darwin
+goarch: amd64
+pkg: github.com/AlexandrGurkin/common/xlog/xzap
+BenchmarkXLog-16                	 1927266	       575 ns/op	       0 B/op	       0 allocs/op
+BenchmarkXLogWithField-16       	  695121	      1668 ns/op	    1514 B/op	      10 allocs/op
+BenchmarkXLogWithFields-16      	  563424	      2233 ns/op	    2091 B/op	      15 allocs/op
+BenchmarkXLog_f-16              	 1685281	       746 ns/op	      20 B/op	       2 allocs/op
+BenchmarkXLogWithField_f-16     	  685778	      1800 ns/op	    1535 B/op	      12 allocs/op
+BenchmarkXLogWithFields_f-16    	  511870	      2334 ns/op	    2113 B/op	      17 allocs/op
+PASS
+ok  	github.com/AlexandrGurkin/common/xlog/xzap	8.859s

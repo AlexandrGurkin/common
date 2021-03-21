@@ -2,6 +2,7 @@ package xlogrus
 
 import (
 	"testing"
+	"time"
 
 	"github.com/AlexandrGurkin/common/mocks"
 	"github.com/AlexandrGurkin/common/xlog"
@@ -9,10 +10,54 @@ import (
 )
 
 func BenchmarkXLog(b *testing.B) {
-	log, _ := NewXLogrus(xlog.LoggerCfg{Level: "trace", Out: &mocks.BlackHoleStream{}})
+	log, _ := NewXLogrus(xlog.LoggerCfg{Level: "trace", Out: &mocks.BlackHoleStream{}, TimeFormat: time.RFC3339Nano})
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		log.Trace("ep")
+	}
+}
+
+func BenchmarkXLogWithField(b *testing.B) {
+	log, _ := NewXLogrus(xlog.LoggerCfg{Level: "trace", Out: &mocks.BlackHoleStream{}, TimeFormat: time.RFC3339Nano})
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		log := log.WithXField("key", "value")
+		log.Trace("ep")
+	}
+}
+
+func BenchmarkXLogWithFields(b *testing.B) {
+	log, _ := NewXLogrus(xlog.LoggerCfg{Level: "trace", Out: &mocks.BlackHoleStream{}, TimeFormat: time.RFC3339Nano})
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		log := log.WithXFields(xlog.Fields{"key1": "val1", "key2": "val2"})
+		log.Trace("ep")
+	}
+}
+
+func BenchmarkXLog_f(b *testing.B) {
+	log, _ := NewXLogrus(xlog.LoggerCfg{Level: "trace", Out: &mocks.BlackHoleStream{}, TimeFormat: time.RFC3339Nano})
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		log.Tracef("ep %s", "1")
+	}
+}
+
+func BenchmarkXLogWithField_f(b *testing.B) {
+	log, _ := NewXLogrus(xlog.LoggerCfg{Level: "trace", Out: &mocks.BlackHoleStream{}, TimeFormat: time.RFC3339Nano})
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		log := log.WithXField("key", "value")
+		log.Tracef("ep %s", "1")
+	}
+}
+
+func BenchmarkXLogWithFields_f(b *testing.B) {
+	log, _ := NewXLogrus(xlog.LoggerCfg{Level: "trace", Out: &mocks.BlackHoleStream{}, TimeFormat: time.RFC3339Nano})
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		log := log.WithXFields(xlog.Fields{"key1": "val1", "key2": "val2"})
+		log.Tracef("ep %s", "1")
 	}
 }
 
@@ -22,12 +67,12 @@ func TestNewXLogrusSuccess(t *testing.T) {
 
 	expectMsg := []byte("{\"level\":\"trace\",\"message\":\"ep\",\"time\":\"*\"}")
 
-	mockWriter := mocks.NewMockWriteSyncer(ctrl)
+	mockWriter := mocks.NewMockWriter(ctrl)
 	mockWriter.EXPECT().
 		Write(mocks.EqWriter(expectMsg)).
 		Times(1)
 
-	log, _ := NewXLogrus(xlog.LoggerCfg{Level: "trace", Out: mockWriter})
+	log, _ := NewXLogrus(xlog.LoggerCfg{Level: "trace", Out: mockWriter, TimeFormat: time.RFC3339Nano})
 	log.Trace("ep")
 } //{"level":"trace","msg":"ep","time":"2021-02-27T16:07:06.536258+03:00"}
 
@@ -37,9 +82,9 @@ func Test_xrus_WithXField(t *testing.T) {
 
 	expectMsg1 := []byte("{\"level\":\"trace\",\"message\":\"ep\",\"time\":\"*\"}")
 	expectMsg2 := []byte("{\"key\":\"value\",\"level\":\"trace\",\"message\":\"ep\",\"time\":\"*\"}")
-	mockWriter := mocks.NewMockWriteSyncer(ctrl)
+	mockWriter := mocks.NewMockWriter(ctrl)
 
-	log1, _ := NewXLogrus(xlog.LoggerCfg{Level: "trace", Out: mockWriter})
+	log1, _ := NewXLogrus(xlog.LoggerCfg{Level: "trace", Out: mockWriter, TimeFormat: time.RFC3339Nano})
 	mockWriter.EXPECT().
 		Write(mocks.EqWriter(expectMsg1)).
 		Times(1)
@@ -65,9 +110,9 @@ func Test_xrus_WithXFields(t *testing.T) {
 
 	expectMsg1 := []byte("{\"level\":\"trace\",\"message\":\"ep\",\"time\":\"*\"}")
 	expectMsg2 := []byte("{\"key\":\"value\",\"level\":\"trace\",\"lol\":\"kek\",\"message\":\"ep\",\"time\":\"*\"}")
-	mockWriter := mocks.NewMockWriteSyncer(ctrl)
+	mockWriter := mocks.NewMockWriter(ctrl)
 
-	log1, _ := NewXLogrus(xlog.LoggerCfg{Level: "trace", Out: mockWriter})
+	log1, _ := NewXLogrus(xlog.LoggerCfg{Level: "trace", Out: mockWriter, TimeFormat: time.RFC3339Nano})
 	mockWriter.EXPECT().
 		Write(mocks.EqWriter(expectMsg1)).
 		Times(1)

@@ -1,0 +1,11 @@
+goos: darwin
+goarch: amd64
+pkg: github.com/AlexandrGurkin/common/xlog/xzerolog
+BenchmarkXLog-16                	 3137553	       378 ns/op	       0 B/op	       0 allocs/op
+BenchmarkXLogWithField-16       	 1945753	       616 ns/op	     608 B/op	       2 allocs/op
+BenchmarkXLogWithFields-16      	 1000000	      1025 ns/op	    1008 B/op	       6 allocs/op
+BenchmarkXLog_f-16              	 2398310	       509 ns/op	      20 B/op	       2 allocs/op
+BenchmarkXLogWithField_f-16     	 1557068	       759 ns/op	     628 B/op	       4 allocs/op
+BenchmarkXLogWithFields_f-16    	 1000000	      1120 ns/op	    1029 B/op	       8 allocs/op
+PASS
+ok  	github.com/AlexandrGurkin/common/xlog/xzerolog	9.560s

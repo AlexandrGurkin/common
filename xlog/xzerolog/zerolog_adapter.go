@@ -12,9 +12,15 @@ type zLog struct {
 }
 
 func NewXZerolog(cfg xlog.LoggerCfg) (xlog.Logger, error) {
-	zerolog.TimeFieldFormat = time.RFC3339Nano
+	if cfg.TimeFormat == "" {
+		cfg.TimeFormat = time.RFC3339Nano
+	}
+	zerolog.TimeFieldFormat = cfg.TimeFormat
 	logger := zerolog.New(cfg.Out).With().Timestamp().Logger()
-	lvl, _ := zerolog.ParseLevel(cfg.Level)
+	lvl, err := zerolog.ParseLevel(cfg.Level)
+	if err != nil {
+		return nil, xlog.ErrorInitLogger.Wrap(err)
+	}
 	zerolog.SetGlobalLevel(lvl)
 	return &zLog{logger}, nil
 }
@@ -72,7 +78,39 @@ func (z *zLog) WithXFields(fields xlog.Fields) xlog.Logger {
 }
 
 func (z *zLog) WithXField(key string, value interface{}) xlog.Logger {
-	f := make(map[string]interface{})
-	f[key] = value
-	return &zLog{z.l.With().Fields(f).Logger()}
+	switch v := value.(type) {
+	case int8:
+		return &zLog{z.l.With().Int8(key, v).Logger()}
+	case int:
+		return &zLog{z.l.With().Int(key, v).Logger()}
+	case int16:
+		return &zLog{z.l.With().Int16(key, v).Logger()}
+	case int32:
+		return &zLog{z.l.With().Int32(key, v).Logger()}
+	case int64:
+		return &zLog{z.l.With().Int64(key, v).Logger()}
+	case uint8:
+		return &zLog{z.l.With().Uint8(key, v).Logger()}
+	case uint:
+		return &zLog{z.l.With().Uint(key, v).Logger()}
+	case uint16:
+		return &zLog{z.l.With().Uint16(key, v).Logger()}
+	case uint32:
+		return &zLog{z.l.With().Uint32(key, v).Logger()}
+	case uint64:
+		return &zLog{z.l.With().Uint64(key, v).Logger()}
+	case string:
+		return &zLog{z.l.With().Str(key, v).Logger()}
+	case float32:
+		return &zLog{z.l.With().Float32(key, v).Logger()}
+	case float64:
+		return &zLog{z.l.With().Float64(key, v).Logger()}
+	case bool:
+		return &zLog{z.l.With().Bool(key, v).Logger()}
+	default:
+		f := make(map[string]interface{})
+		f[key] = value
+		return &zLog{z.l.With().Fields(f).Logger()}
+	}
+
 }

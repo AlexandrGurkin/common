@@ -7,7 +7,7 @@ get-mock:
 
 mock-gen:
 	@rm -rf mocks/mock_writer.go
-	@mockgen -destination mocks/mock_writer.go -package=mocks github.com/AlexandrGurkin/common/xlog WriteSyncer
+	@mockgen -destination mocks/mock_writer.go -package=mocks io Writer
 
 tools:
 	@go get golang.org/x/tools/cmd/benchcmp

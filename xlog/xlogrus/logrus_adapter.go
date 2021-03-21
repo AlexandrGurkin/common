@@ -20,14 +20,17 @@ func (x *xrus) WithXField(key string, value interface{}) xlog.Logger {
 }
 
 func NewXLogrus(cfg xlog.LoggerCfg) (xlog.Logger, error) {
+	if cfg.TimeFormat == "" {
+		cfg.TimeFormat = time.RFC3339Nano
+	}
 	lvl, err := logrus.ParseLevel(cfg.Level)
 	if err != nil {
-		logrus.SetLevel(logrus.DebugLevel)
-	} else {
-		logrus.SetLevel(lvl)
+		return nil, xlog.ErrorInitLogger.Wrap(err)
 	}
+	logrus.SetLevel(lvl)
+
 	logrus.SetFormatter(&logrus.JSONFormatter{
-		TimestampFormat: time.RFC3339Nano,
+		TimestampFormat: cfg.TimeFormat,
 		FieldMap: logrus.FieldMap{
 			logrus.FieldKeyMsg: "message",
 		},

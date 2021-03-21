@@ -1,7 +1,6 @@
 package xzap
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/AlexandrGurkin/common/xlog"
@@ -14,73 +13,17 @@ type xZap struct {
 	s *zap.SugaredLogger
 }
 
-func NewLoggerWithSample(logLevel string, debug bool, first, thereafter int, samplerDuration time.Duration) (*zap.Logger, error) {
-	var (
-		prodEncoder    zapcore.Encoder
-		consoleEncoder zapcore.Encoder
-	)
-
-	if debug {
-		consoleEncoder = zapcore.NewConsoleEncoder(zap.NewDevelopmentEncoderConfig())
-	} else {
-		prodEncoder = zapcore.NewJSONEncoder(zap.NewProductionEncoderConfig())
-	}
-
-	cz, _, err := zap.Open("stdout")
-	if err != nil {
-		return nil, err
-	}
-
-	level := zapcore.DebugLevel
-	if logLevel != "" {
-		if err := level.Set(logLevel); err != nil {
-			fmt.Printf("wrong log level[%s]. valid are: [DEBUG,INFO,WARN,ERROR,DPANIC,PANIC,FATAL]", logLevel)
-			return nil, err
-		}
-	}
-
-	consolePriority := zap.LevelEnablerFunc(func(lvl zapcore.Level) bool {
-		return lvl >= level
-	})
-
-	var core zapcore.Core
-	if debug {
-		core = zapcore.NewCore(consoleEncoder, cz, consolePriority)
-	} else {
-		core = zapcore.NewCore(prodEncoder, cz, consolePriority)
-	}
-
-	queue := make(chan string, 2)
-	for elem := range queue {
-		fmt.Println(elem)
-	}
-
-	sampler := zapcore.NewSamplerWithOptions(
-		core,
-		samplerDuration,
-		first,
-		thereafter,
-	)
-
-	var logger *zap.Logger
-	if debug {
-		logger = zap.New(sampler, zap.Development())
-	} else {
-		logger = zap.New(sampler)
-	}
-
-	return logger, nil
-}
-
 func NewXZap(cfg xlog.LoggerCfg) (xlog.Logger, error) {
-	//zerolog.TimeFieldFormat = time.RFC3339Nano
+	if cfg.TimeFormat == "" {
+		cfg.TimeFormat = time.RFC3339Nano
+	}
 	encoderCfg := zapcore.EncoderConfig{
 		MessageKey:     "message",
 		LevelKey:       "level",
 		NameKey:        "logger",
 		TimeKey:        "time",
 		EncodeLevel:    zapcore.LowercaseLevelEncoder,
-		EncodeTime:     zapcore.RFC3339NanoTimeEncoder,
+		EncodeTime:     zapcore.TimeEncoderOfLayout(cfg.TimeFormat),
 		EncodeDuration: zapcore.StringDurationEncoder,
 	}
 
@@ -94,8 +37,13 @@ func NewXZap(cfg xlog.LoggerCfg) (xlog.Logger, error) {
 		}
 	}
 
-	core := zapcore.NewCore(zapcore.NewJSONEncoder(encoderCfg), cfg.Out, level)
-	//core = zapcore.NewSamplerWithOptions(core, 10 * time.Second, 1, 2)
+	var out zapcore.WriteSyncer
+	var ok bool
+	if out, ok = cfg.Out.(zapcore.WriteSyncer); !ok {
+		out = zapcore.AddSync(cfg.Out)
+	}
+
+	core := zapcore.NewCore(zapcore.NewJSONEncoder(encoderCfg), out, level)
 	logger := zap.New(core)
 	sugar := logger.Sugar()
 

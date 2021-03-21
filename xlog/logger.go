@@ -37,12 +37,8 @@ type Logger interface {
 
 type Fields map[string]interface{}
 
-type WriteSyncer interface {
-	io.Writer
-	Sync() error
-}
-
 type LoggerCfg struct {
-	Level string
-	Out   WriteSyncer
+	Level      string
+	TimeFormat string
+	Out        io.Writer
 }
