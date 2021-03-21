@@ -9,5 +9,6 @@ require (
 	github.com/prometheus/client_golang v1.9.0
 	github.com/rs/zerolog v1.20.0
 	github.com/sirupsen/logrus v1.6.0
+	go.uber.org/zap v1.16.0
 	golang.org/x/tools v0.1.0
 )

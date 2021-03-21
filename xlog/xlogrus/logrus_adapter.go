@@ -19,7 +19,7 @@ func (x *xrus) WithXField(key string, value interface{}) xlog.Logger {
 	return &xrus{*x.WithField(key, value)}
 }
 
-func NewXLogrus(cfg xlog.LoggerCfg) xlog.Logger {
+func NewXLogrus(cfg xlog.LoggerCfg) (xlog.Logger, error) {
 	lvl, err := logrus.ParseLevel(cfg.Level)
 	if err != nil {
 		logrus.SetLevel(logrus.DebugLevel)
@@ -33,29 +33,29 @@ func NewXLogrus(cfg xlog.LoggerCfg) xlog.Logger {
 		},
 	})
 	logrus.SetOutput(cfg.Out)
-	//logrus.AddHook(hooks.LogProm{})
-	return &xrus{*logrus.NewEntry(logrus.StandardLogger())}
+
+	return &xrus{*logrus.NewEntry(logrus.StandardLogger())}, nil
 }
 
 func (x *xrus) Debug(msg string) {
-	x.Debugf("%s", msg)
+	x.Entry.Debug(msg)
 }
 
 func (x *xrus) Info(msg string) {
-	x.Infof("%s", msg)
+	x.Entry.Info(msg)
 }
 
 func (x *xrus) Warn(msg string) {
-	x.Warnf("%s", msg)
+	x.Entry.Warn(msg)
 }
 func (x *xrus) Trace(msg string) {
-	x.Tracef("%s", msg)
+	x.Entry.Trace(msg)
 }
 
 func (x *xrus) Error(msg string) {
-	x.Errorf("%s", msg)
+	x.Entry.Error(msg)
 }
 
 func (x *xrus) Fatal(msg string) {
-	x.Fatalf("%s", msg)
+	x.Entry.Fatal(msg)
 }

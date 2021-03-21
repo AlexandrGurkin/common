@@ -11,12 +11,12 @@ type zLog struct {
 	l zerolog.Logger
 }
 
-func NewXZerolog(cfg xlog.LoggerCfg) xlog.Logger {
+func NewXZerolog(cfg xlog.LoggerCfg) (xlog.Logger, error) {
 	zerolog.TimeFieldFormat = time.RFC3339Nano
 	logger := zerolog.New(cfg.Out).With().Timestamp().Logger()
 	lvl, _ := zerolog.ParseLevel(cfg.Level)
 	zerolog.SetGlobalLevel(lvl)
-	return &zLog{logger}
+	return &zLog{logger}, nil
 }
 
 func (z *zLog) Debugf(format string, args ...interface{}) {
